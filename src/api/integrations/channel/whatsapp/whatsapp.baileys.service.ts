@@ -524,7 +524,7 @@ export class BaileysStartupService extends ChannelStartupService {
     try {
       // Use raw SQL to avoid JSON path issues
       const webMessageInfo = (await this.prismaRepository.$queryRaw`
-        SELECT * FROM "Message"
+        SELECT * FROM "evolution"."Message"
         WHERE "instanceId" = ${this.instanceId}
         AND "key"->>'id' = ${key.id}
       `) as proto.IWebMessageInfo[];
@@ -1638,7 +1638,7 @@ export class BaileysStartupService extends ChannelStartupService {
             const searchId = originalMessageId || key.id;
 
             const messages = (await this.prismaRepository.$queryRaw`
-              SELECT * FROM "Message"
+              SELECT * FROM "evolution"."Message"
               WHERE "instanceId" = ${this.instanceId}
               AND "key"->>'id' = ${searchId}
               LIMIT 1
@@ -4736,7 +4736,7 @@ export class BaileysStartupService extends ChannelStartupService {
 
     // Use raw SQL to avoid JSON path issues
     const result = await this.prismaRepository.$executeRaw`
-      UPDATE "Message"
+      UPDATE "evolution"."Message"
       SET "status" = ${status[4]}
       WHERE "instanceId" = ${this.instanceId}
       AND "key"->>'remoteJid' = ${remoteJid}
@@ -4761,7 +4761,7 @@ export class BaileysStartupService extends ChannelStartupService {
       this.prismaRepository.chat.findFirst({ where: { remoteJid } }),
       // Use raw SQL to avoid JSON path issues
       this.prismaRepository.$queryRaw`
-        SELECT COUNT(*)::int as count FROM "Message"
+        SELECT COUNT(*)::int as count FROM "evolution"."Message"
         WHERE "instanceId" = ${this.instanceId}
         AND "key"->>'remoteJid' = ${remoteJid}
         AND ("key"->>'fromMe')::boolean = false
@@ -4780,7 +4780,7 @@ export class BaileysStartupService extends ChannelStartupService {
     const id = cuid();
 
     await this.prismaRepository.$executeRawUnsafe(
-      `INSERT INTO "Chat" ("id", "instanceId", "remoteJid", "labels", "createdAt", "updatedAt")
+      `INSERT INTO "evolution"."Chat" ("id", "instanceId", "remoteJid", "labels", "createdAt", "updatedAt")
        VALUES ($4, $2, $3, to_jsonb(ARRAY[$1]::text[]), NOW(), NOW()) ON CONFLICT ("instanceId", "remoteJid")
      DO
       UPDATE
@@ -4804,7 +4804,7 @@ export class BaileysStartupService extends ChannelStartupService {
     const id = cuid();
 
     await this.prismaRepository.$executeRawUnsafe(
-      `INSERT INTO "Chat" ("id", "instanceId", "remoteJid", "labels", "createdAt", "updatedAt")
+      `INSERT INTO "evolution"."Chat" ("id", "instanceId", "remoteJid", "labels", "createdAt", "updatedAt")
        VALUES ($4, $2, $3, '[]'::jsonb, NOW(), NOW()) ON CONFLICT ("instanceId", "remoteJid")
      DO
       UPDATE
